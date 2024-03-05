@@ -1,0 +1,169 @@
+CREATE SCHEMA IF NOT EXISTS `AirlineCompanySystem`;
+
+USE `AirlineCompanySystem`;
+CREATE TABLE `CAPTAIN`(
+CaptainID  INT(3) NOT NULL,
+Fname  VARCHAR(50),
+Lname  VARCHAR(50),
+email  VARCHAR(50),
+phone  INT(10),
+address  VARCHAR(100),
+CONSTRAINT `CAPTAIN_PK` PRIMARY KEY (CaptainID)
+);
+
+CREATE TABLE `EMPLOYEE`(
+EmployeeID  INT(3) NOT NULL,
+Fname  VARCHAR(50),
+Lname  VARCHAR(50),
+email  VARCHAR(50),
+phone  INT(10),
+address  VARCHAR(100),
+CONSTRAINT `EMPLOYEE_PK` PRIMARY KEY (EmployeeID)
+);
+
+CREATE TABLE `PLANE`(
+PlaneID  INT(3) NOT NULL,
+namePlane  VARCHAR(50),
+capacity  INT(3),
+CONSTRAINT `PLANE_PK` PRIMARY KEY (PlaneID)
+);
+
+CREATE TABLE `WORKS`(
+EmployeeID  INT(3) NOT NULL,
+PlaneID  INT(3) NOT NULL,
+CONSTRAINT `WORKS_PK` PRIMARY KEY (EmployeeID ,PlaneID),
+CONSTRAINT `WORKS_FK1` FOREIGN KEY (EmployeeID) REFERENCES `EMPLOYEE`(EmployeeID)
+ON DELETE CASCADE
+ON UPDATE CASCADE,
+CONSTRAINT `WORKS_FK2` FOREIGN KEY (PlaneID) REFERENCES `PLANE`(PlaneID)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+);
+
+CREATE TABLE `DRIVING`(
+CaptainID  INT(3) NOT NULL,
+PlaneID  INT(3) NOT NULL,
+CONSTRAINT `DRIVING_PK` PRIMARY KEY (CaptainID,PlaneID),
+CONSTRAINT `DRIVING_FK1` FOREIGN KEY (CaptainID) REFERENCES `CAPTAIN`(CaptainID)
+ON DELETE CASCADE
+ON UPDATE CASCADE,
+CONSTRAINT `DRIVING_FK2` FOREIGN KEY (PlaneID) REFERENCES `PLANE`(PlaneID)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+);
+
+CREATE TABLE `SEAT`(
+SeatID  INT(3) NOT NULL,
+class  CHAR(1) CHECK(class IN('b','i')),
+PlaneID  INT(3) NOT NULL,
+CONSTRAINT `SEAT_PK` PRIMARY KEY (SeatID )
+);
+
+CREATE TABLE `PASSENGER`(
+Fname  VARCHAR(50),
+Lname  VARCHAR(50),
+email  VARCHAR(50),
+phone  INT(10),
+address  VARCHAR(100),
+SeatID  INT(3) NOT NULL,
+ CONSTRAINT`PASSENGER_FK`FOREIGN KEY(SeatID) REFERENCES `SEAT` (SeatID)
+);
+
+INSERT INTO CAPTAIN
+VALUES ('43', 'Ahmed', 'Fahad',' Ahmed22@gmail.com', '59836753' , 'Jeddah-Almahjar')
+ ,('665' , 'Omar', 'Abdullah', 'Omar9@gmail.com', '59351836', 'Makkah-Alrasaifah')
+ ,('70', 'Waleed' , 'Majed' , 'Waleed0@gmail.com', '59365938', 'Taif-Alkhalidiya')
+ ,('776' , 'Hassan' ,'Musa', 'Hassan@gmail.com' , '593746528' , 'Makkah-Aziziyah' )
+ ,('323' , 'Yusuf' , 'Ali' , 'Yusuf@gmail.com', '590473586', 'Makkah-Almaabda');
+
+INSERT INTO EMPLOYEE
+VALUES ('303' , 'Nada', 'Barnawi', 'Nada@gmail.com' , '0173548245' , 'Makkah-Alshoqiyah')
+        ,('999' , 'Arin' , 'AlLuhaybi' , 'Arin@gmail.com' , '0172954982' , 'Riyagh-Alfaisaliyyah')
+        ,('411' , 'Rawan' , 'Bakr' , 'Rawan@gmail.com' , '0182674928' , 'Jeddah-Al amariya')
+        ,('333','Shomokh' , 'Alharthi' , 'Shomokh@gmail.com' , '0174562910' ,'Makkah-Alnzha' )
+       ,('272','Bashayre' , 'Al-Otaibi' , 'Bashayer@gmail.com','0129638548' , 'Makkah-Al zahir' );
+
+INSERT INTO PLANE
+VALUES('20' , 'Acaca' , '804')
+,('81' , 'Acro-Sport' , '666')
+,('98' , 'Adl-Stallion' , '200')
+,( '11' , 'Mudry-CAP' , '525')
+,('62' , 'Chrislea' , '340');
+
+INSERT INTO WORKS
+VALUES('303' , '20')
+,('999' , '81')
+,('411' , '98')
+,( '333' , '11')
+,('272' , '62');
+
+INSERT INTO DRIVING
+VALUES('43' , '20')
+,('665' , '81')
+,('78' , '98')
+,('771' , '11')
+,('322' , '62');
+
+INSERT INTO SEAT
+VALUES('001' , 'b' , '20')
+,('002' , 'i' , '81')
+,('003' , 'i', '98' )
+,('004' , 'b' , '11')
+,('005' , 'b' , '62');
+
+INSERT INTO PASSENGER
+VALUES ('Lina' , 'Dawood' , 'Lina@gmail.com' , '0143285674' , 'Al rabiea' , '001')
+      ,( 'Tala' , 'Noah' , 'Tala@gmail.com' , '0119587638' ,'Alnafl district', '002')
+       ,('Allen' , 'Aziz' , 'Allen@gmail.com' , '0143856271' , 'King faisal-neighborhood' , '004')
+      ,('Bara' , 'Hattan' , 'Bara@gmail.com' , '0183753856', 'Altaawun-neighborhood' , '005' );
+
+UPDATE CAPTAIN
+SET Fname='Aseel'
+WHERE CaptainID='43';
+SELECT *
+FROM CAPTAIN;
+
+UPDATE PLANE
+SET capacity = '55'
+WHERE PlaneID = '111';
+SELECT * 
+FROM PLANE;
+
+DELETE FROM SEAT
+WHERE SeatID = 3;
+SELECT *
+FROM SEAT;
+
+DELETE FROM CAPTAIN
+WHERE CaptainID =771;
+SELECT *
+FROM CAPTAIN;
+
+SELECT PlaneID,COUNT(capacity) AS count,Sum(capacity) AS sum
+FROM PLANE
+WHERE PlaneID
+GROUP BY PlaneID;
+
+SELECT PlaneID,namePlane,capacity
+FROM PLANE 
+ORDER BY PlaneID DESC;
+
+SELECT *
+FROM CAPTAIN
+ORDER BY CaptainID DESC;
+
+SELECT *
+FROM PLANE
+WHERE PlaneID = (SELECT PlaneID
+                               FROM SEAT
+                               WHERE   SeatID = 002
+                               AND   class = 'i');
+
+SELECT *
+FROM EMPLOYEE AS L
+INNER JOIN WORKS AS R 
+ON EmployeeID = EmployeeID;
+
+SELECT *
+FROM CAPTAIN
+CROSS JOIN EMPLOYEE;
